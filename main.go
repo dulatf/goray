@@ -52,14 +52,15 @@ func sdTorus(p Vector, r1, r2 float64) float64 {
 }
 
 func signedDistance(p Vector) float64 {
-	return opSub(opSub(opUnion(opUnion(opUnion(
-		sdSphere(p, 1.5),
-		sdSphere(Sub(p, Vector{2, 0, 0}), 1.0)),
-		sdSphere(Sub(p, Vector{0, -100, 0}), 100.0)),
-		sdTorus(Sub(p, Vector{0, 2, 0}), 1.0, 0.2)),
-		sdTorus(Sub(p, Vector{0, 1, 0}), 1.0, 0.2)),
-		sdSphere(Sub(p, Vector{-2, 0, -2}), 1.0))
-
+	/*return opSub(opSub(opUnion(opUnion(opUnion(
+	sdSphere(p, 1.5),
+	sdSphere(Sub(p, Vector{2, 0, 0}), 1.0)),
+	sdSphere(Sub(p, Vector{0, -100, 0}), 100.0)),
+	sdTorus(Sub(p, Vector{0, 2, 0}), 1.0, 0.2)),
+	sdTorus(Sub(p, Vector{0, 1, 0}), 1.0, 0.2)),
+	sdSphere(Sub(p, Vector{-2, 0, -2}), 1.0))*/
+	return opSub(sdSphere(p, 2.0),
+		sdTorus(p, 2.0, 0.5))
 }
 
 func normal(pos Vector) Vector {
@@ -84,9 +85,11 @@ func lightContribution(pos Vector, light Light) Vector {
 	}
 }
 func shade(pos Vector) Vector {
-	lights := [3]Light{Light{Vector{2.0, 5.0, -1.0}, Vector{0.3, 0.3, 0.3}},
-		Light{Vector{-2.0, 5.0, -1.0}, Vector{0.3, 0.3, 0.3}},
-		Light{Vector{0.0, 10.0, 0.0}, Vector{0.1, 0.15, 0.2}}}
+	/*lights := [3]Light{Light{Vector{2.0, 5.0, -1.0}, Vector{0.3, 0.3, 0.3}},
+	Light{Vector{-2.0, 5.0, -1.0}, Vector{0.3, 0.3, 0.3}},
+	Light{Vector{0.0, 10.0, 0.0}, Vector{0.1, 0.15, 0.2}}}*/
+	lights := [2]Light{Light{Vector{3.0, 2.0, -2.0}, Vector{1.0, 0.5, 0.4}},
+		Light{Vector{-4.0, -1.0, -2.0}, Vector{0.2, 1.0, 0.5}}}
 	col := Vector{0.0, 0.0, 0.0}
 	for _, light := range lights {
 		col = Add(col, lightContribution(pos, light))
@@ -111,7 +114,7 @@ func sphereTrace(o, dir Vector) (bool, Vector) {
 }
 
 func tracePixel(w, h int, x, y float64, fov float64) Vector {
-	o := Vector{0, 1, -5.0}
+	o := Vector{0, 0, -5.0}
 	d := Vector{x + 0.5 - float64(w)/2.0,
 		-(y + 0.5 - float64(h)/2.0),
 		float64(h) / (2.0 * math.Tan(fov/2.0))}
@@ -120,7 +123,7 @@ func tracePixel(w, h int, x, y float64, fov float64) Vector {
 	if hit {
 		return shade(pos)
 	} else {
-		return Vector{0.4, 0.6, 0.8}
+		return Vector{0.34, 0.6, 0.8}
 	}
 }
 
@@ -139,6 +142,7 @@ func render(w, h int, framebuffer []Vector) {
 }
 
 func main() {
+	fmt.Println("Hello, world y'all!")
 	w, h := 640, 360
 	framebuffer := make([]Vector, w*h)
 	render(w, h, framebuffer)
